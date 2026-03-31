@@ -75,7 +75,7 @@ export default function ServicesPage() {
   function startAdd() {
     setAdding(true)
     setEditing(null)
-    setForm({ name: '', description: '', duration_minutes: 60, price: '' })
+    setForm({ name: '', description: '', duration_minutes: 60, price: '', deposit_amount: '' })
     setError('')
   }
 

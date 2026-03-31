@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
 
 const NAV = [
   { href: '/dashboard', label: 'Home', icon: '🏠' },
@@ -11,7 +12,15 @@ const NAV = [
   { href: '/dashboard/settings', label: 'Settings', icon: '⚙️' },
 ]
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: artist } = user
+    ? await supabase.from('artists').select('plan').eq('id', user.id).single()
+    : { data: null }
+
+  const isPro = artist?.plan === 'pro'
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       {/* Sidebar */}
@@ -22,17 +31,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <nav style={{ flex: 1 }}>
           {NAV.map(item => (
             <Link key={item.href} href={item.href}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.625rem 1.25rem', color: 'var(--muted-foreground)', textDecoration: 'none', fontSize: '0.9375rem', transition: 'color 0.15s', borderRadius: '0' }}>
+              style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.625rem 1.25rem', color: 'var(--muted-foreground)', textDecoration: 'none', fontSize: '0.9375rem', transition: 'color 0.15s' }}>
               <span>{item.icon}</span>
               <span>{item.label}</span>
             </Link>
           ))}
         </nav>
         <div style={{ padding: '1.25rem' }}>
-          <Link href="/dashboard/upgrade"
-            style={{ display: 'block', textAlign: 'center', padding: '0.625rem', borderRadius: '0.5rem', background: 'rgba(200,169,126,0.12)', color: 'var(--accent)', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600, border: '1px solid rgba(200,169,126,0.25)' }}>
-            ⚡ Upgrade to Pro
-          </Link>
+          {isPro ? (
+            <Link href="/dashboard/upgrade"
+              style={{ display: 'block', textAlign: 'center', padding: '0.625rem', borderRadius: '0.5rem', background: 'rgba(200,169,126,0.15)', color: 'var(--accent)', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600, border: '1px solid rgba(200,169,126,0.3)' }}>
+              ⚡ Pro plan
+            </Link>
+          ) : (
+            <Link href="/dashboard/upgrade"
+              style={{ display: 'block', textAlign: 'center', padding: '0.625rem', borderRadius: '0.5rem', background: 'rgba(200,169,126,0.12)', color: 'var(--accent)', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600, border: '1px solid rgba(200,169,126,0.25)' }}>
+              ⚡ Upgrade to Pro
+            </Link>
+          )}
         </div>
       </aside>
 

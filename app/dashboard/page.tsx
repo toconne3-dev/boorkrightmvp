@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import CopyBookingLink from './_components/CopyBookingLink'
 
 function formatTime(iso: string, tz: string) {
   return new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: tz })
@@ -58,17 +59,7 @@ export default async function DashboardHome() {
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
         </div>
-        <div style={{ background: 'var(--muted)', border: '1px solid var(--border)', borderRadius: '0.625rem', padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div>
-            <p style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', marginBottom: '0.125rem' }}>Your booking link</p>
-            <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--accent)' }}>{bookingUrl}</p>
-          </div>
-          <button
-            onClick={undefined}
-            style={{ background: 'var(--accent)', color: '#0a0a0a', border: 'none', borderRadius: '0.375rem', padding: '0.5rem 0.875rem', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer' }}>
-            Copy
-          </button>
-        </div>
+        <CopyBookingLink bookingUrl={bookingUrl} />
       </div>
 
       {/* Stats row */}

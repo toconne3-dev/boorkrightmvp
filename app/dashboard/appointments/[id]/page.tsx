@@ -222,7 +222,7 @@ export default function AppointmentDetailPage() {
             </div>
           )}
           {appt.clients?.id && (
-            <Link href={`/dashboard/clients`} style={{ color: 'var(--muted-foreground)', fontSize: '0.8125rem', textDecoration: 'none', marginTop: '0.25rem' }}>
+            <Link href={`/dashboard/clients/${appt.clients.id}`} style={{ color: 'var(--muted-foreground)', fontSize: '0.8125rem', textDecoration: 'none', marginTop: '0.25rem' }}>
               View full client history →
             </Link>
           )}
