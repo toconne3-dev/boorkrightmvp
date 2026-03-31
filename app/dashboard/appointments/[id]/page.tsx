@@ -75,7 +75,7 @@ export default function AppointmentDetailPage() {
 
       if (artistData?.timezone) setTz(artistData.timezone)
       if (!apptData) { setNotFound(true); setLoading(false); return }
-      setAppt(apptData as AppointmentDetail)
+      setAppt(apptData as unknown as AppointmentDetail)
       setLoading(false)
     }
     load()
