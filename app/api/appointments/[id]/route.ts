@@ -38,6 +38,11 @@ export async function PATCH(
 
   if (!appt) return NextResponse.json({ error: 'Appointment not found' }, { status: 404 })
 
+  // Cast joined relations (Supabase infers these as arrays; we know they're single objects)
+  const client = (Array.isArray(appt.clients) ? appt.clients[0] : appt.clients) as { name: string; email: string } | null
+  const service = (Array.isArray(appt.services) ? appt.services[0] : appt.services) as { name: string; duration_minutes: number } | null
+  const artist = (Array.isArray(appt.artists) ? appt.artists[0] : appt.artists) as { name: string; business_name: string | null; timezone: string; booking_slug: string } | null
+
   // Build update payload
   const updates: Record<string, string | boolean> = {}
   if (status) updates.status = status
@@ -51,18 +56,16 @@ export async function PATCH(
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 })
 
   // Send client confirmation email when artist confirms
-  if (status === 'confirmed' && appt.clients?.email) {
+  if (status === 'confirmed' && client?.email) {
     try {
       await sendClientConfirmation({
-        clientEmail: appt.clients.email,
-        clientName: appt.clients.name,
-        artistName: (appt.artists as { name: string; business_name: string | null })?.business_name
-          || (appt.artists as { name: string })?.name
-          || 'Your artist',
-        serviceName: appt.services?.name || 'Your appointment',
+        clientEmail: client.email,
+        clientName: client.name,
+        artistName: artist?.business_name || artist?.name || 'Your artist',
+        serviceName: service?.name || 'Your appointment',
         startAt: appt.start_at,
-        timezone: (appt.artists as { timezone: string })?.timezone || 'America/New_York',
-        bookingSlug: (appt.artists as { booking_slug: string })?.booking_slug || '',
+        timezone: artist?.timezone || 'America/New_York',
+        bookingSlug: artist?.booking_slug || '',
       })
     } catch (e) {
       // Non-fatal: log but don't fail the request
