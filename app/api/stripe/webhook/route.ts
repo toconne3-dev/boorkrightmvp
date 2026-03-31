@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 import { createServiceClient } from '@/lib/supabase/server'
 import { Resend } from 'resend'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-01-27.acacia' })
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-03-25.dahlia' })
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = process.env.RESEND_FROM_EMAIL || 'BookRight <onboarding@resend.dev>'
 
